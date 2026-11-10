@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogue Submission Form</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-image: url(1.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        .page {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            min-height: 100vh;
+        }
+
+        /* ---------- Header ---------- */
+        .header {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 10px;
+            margin: 10px;
+        }
+        .title-box {
+            background-color: antiquewhite;
+            border-radius: 20px;
+            padding: 12px 20px;
+        }
+        .title-box h1 { margin: 0; font-size: 30px; font-weight: normal; }
+        .title-box p  { margin: 4px 0 0; font-size: 18px; }
+        .tag-box {
+            background-color: rgb(216, 245, 196);
+            border-radius: 20px;
+            padding: 12px 20px;
+            font-size: 20px;
+            text-align: right;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        /* ---------- Form area ---------- */
+        .form-area {
+            background-color: rgba(195, 251, 251, 0.6);
+            border: 2px solid rgb(240, 190, 24);
+            border-radius: 8px;
+            margin: 5px 10px 10px;
+            padding: 25px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 30px;
+        }
+        .full { grid-column: 1 / -1; }
+
+        .field input,
+        .field textarea {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 18px;
+            font-family: inherit;
+            border: 1px solid #bbb;
+            border-radius: 14px;
+            background: white;
+        }
+        .field textarea { min-height: 100px; resize: vertical; }
+        .field input:focus,
+        .field textarea:focus {
+            outline: none;
+            border-color: rgb(240, 190, 24);
+            box-shadow: 0 0 0 3px rgba(240, 190, 24, 0.3);
+        }
+
+        /* ---------- Submit button ---------- */
+        .sb {
+            width: 100%;
+            max-width: 360px;
+            display: block;
+            margin: 10px auto 0;
+            padding: 14px;
+            font-size: 24px;
+            font-family: inherit;
+            color: rgb(30, 60, 60);
+            background-color: rgb(216, 240, 150);
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .sb:hover:not(:disabled) { background-color: rgb(150, 190, 60); }
+        .sb:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* ---------- Success message ---------- */
+        #success-message {
+            text-align: center;
+            font-size: 28px;
+            padding: 60px 20px;
+        }
+        .hidden { display: none; }
+
+        /* ---------- Small screens ---------- */
+        @media (max-width: 700px) {
+            .header { grid-template-columns: 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
+            .title-box h1 { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page">
+
+        <div class="header">
+            <div class="title-box">
+                <h1>Students' International Relations Cell</h1>
+                <p>Indian Institute of Technology, Kharagpur</p>
+            </div>
+            <div class="tag-box">Submit your Catalogue here !</div>
+        </div>
+
+        <div class="form-area">
+
+            <div id="form-box">
+                <div class="form-grid">
+                    <div class="field">
+                        <input type="text" id="nm" placeholder="NAME" autocomplete="name">
+                    </div>
+                    <div class="field">
+                        <input type="text" id="rn" placeholder="ROLL NO.">
+                    </div>
+
+                    <div class="field">
+                        <input type="text" id="md1" placeholder="DOCUMENT 1 LINK">
+                    </div>
+                    <div class="field">
+                        <input type="text" id="md2" placeholder="DOCUMENT 2 LINK">
+                    </div>
+
+                    <div class="field full">
+                        <input type="text" id="md3" placeholder="DOCUMENT 3 LINK">
+                    </div>
+
+                    <div class="field full">
+                        <textarea id="cmt" placeholder="COMMENT (optional)"></textarea>
+                    </div>
+                </div>
+
+                <button type="button" id="st" class="sb">Submit</button>
+            </div>
+
+            <div id="success-message" class="hidden">
+                Thank you! Your details have been submitted.
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Paste your Google Apps Script web app URL here
+        const SCRIPT_URL = "PASTE_YOUR_WEB_APP_URL_HERE";
+
+        document.getElementById("st").addEventListener("click", async function () {
+            const data = {
+                name: document.getElementById("nm").value.trim(),
+                roll: document.getElementById("rn").value.trim(),
+                d1:   document.getElementById("md1").value.trim(),
+                d2:   document.getElementById("md2").value.trim(),
+                d3:   document.getElementById("md3").value.trim(),
+                comt: document.getElementById("cmt").value.trim()
+            };
+
+            if (!data.name || !data.roll) {
+                alert("Please fill in your name and roll number.");
+                return;
+            }
+
+            if (SCRIPT_URL.startsWith("PASTE_")) {
+                alert("The form is not connected yet. Add the Google Apps Script URL in main.html.");
+                return;
+            }
+
+            const btn = document.getElementById("st");
+            btn.disabled = true;
+            btn.textContent = "Submitting...";
+
+            try {
+                const res = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(data)
+                });
+                if (!res.ok) throw new Error("Bad response");
+
+                document.getElementById("form-box").classList.add("hidden");
+                document.getElementById("success-message").classList.remove("hidden");
+            } catch (err) {
+                alert("Submission failed. Please try again.");
+                btn.disabled = false;
+                btn.textContent = "Submit";
+            }
+        });
+    </script>
+
+</body>
+</html>
